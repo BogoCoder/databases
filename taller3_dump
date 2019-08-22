@@ -214,10 +214,10 @@ COPY public.instructor (inst_id, nombres, apellidos, nombre_unid, salario) FROM 
 --
 
 COPY public.unid_acad (nombre_unid, edificio, presupuesto) FROM stdin;
-MACC	Cabal	100.00
-ECON	Pedro	800.00
-BIOL	QM	500.00
-ROSEA	Claustro	300.00
+ECON	Pedro	103.00
+BIOL	QM	103.00
+ROSEA	Claustro	103.00
+MACC	Cabal	103.00
 \.
 
 
