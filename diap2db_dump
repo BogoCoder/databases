@@ -1,0 +1,182 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.9 (Ubuntu 10.9-0ubuntu0.18.04.1)
+-- Dumped by pg_dump version 10.9 (Ubuntu 10.9-0ubuntu0.18.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: curso; Type: TABLE; Schema: public; Owner: lovelace
+--
+
+CREATE TABLE public.curso (
+    curso_cod character varying(7) NOT NULL,
+    nombre character varying(50),
+    nombre_unid character varying(20),
+    creditos integer
+);
+
+
+ALTER TABLE public.curso OWNER TO lovelace;
+
+--
+-- Name: curso2; Type: TABLE; Schema: public; Owner: lovelace
+--
+
+CREATE TABLE public.curso2 (
+    curso_cod character varying(7) NOT NULL,
+    nombre character varying(50),
+    nombre_unid character varying(20),
+    creditos integer
+);
+
+
+ALTER TABLE public.curso2 OWNER TO lovelace;
+
+--
+-- Name: estcursos; Type: TABLE; Schema: public; Owner: lovelace
+--
+
+CREATE TABLE public.estcursos (
+    estid integer NOT NULL,
+    curso_cod character varying(7) NOT NULL,
+    nota numeric(2,1)
+);
+
+
+ALTER TABLE public.estcursos OWNER TO lovelace;
+
+--
+-- Name: estudiante; Type: TABLE; Schema: public; Owner: lovelace
+--
+
+CREATE TABLE public.estudiante (
+    nombres character varying(20) NOT NULL,
+    apellidos character varying(20) NOT NULL,
+    id integer NOT NULL
+);
+
+
+ALTER TABLE public.estudiante OWNER TO lovelace;
+
+--
+-- Data for Name: curso; Type: TABLE DATA; Schema: public; Owner: lovelace
+--
+
+COPY public.curso (curso_cod, nombre, nombre_unid, creditos) FROM stdin;
+000	programacion	MACC	4
+001	arquitectura	MACC	4
+002	algoritmos	MACC	4
+100	micro1	ECON	4
+101	micro2	ECON	4
+102	micro3	ECON	4
+\.
+
+
+--
+-- Data for Name: curso2; Type: TABLE DATA; Schema: public; Owner: lovelace
+--
+
+COPY public.curso2 (curso_cod, nombre, nombre_unid, creditos) FROM stdin;
+002	algoritmos	MACC	4
+003	grafos	MACC	4
+004	teoria de la computacion	MACC	4
+005	abstracta	MACC	4
+006	pensamiento matematico	MACC	2
+103	macro1	ECON	3
+001	arquitectura	MACC	4
+100	micro1	ECON	4
+101	micro2	ECON	4
+102	micro3	ECON	4
+\.
+
+
+--
+-- Data for Name: estcursos; Type: TABLE DATA; Schema: public; Owner: lovelace
+--
+
+COPY public.estcursos (estid, curso_cod, nota) FROM stdin;
+8888	000	4.2
+5555	000	3.6
+5555	001	4.8
+3333	001	3.3
+3333	002	3.3
+\.
+
+
+--
+-- Data for Name: estudiante; Type: TABLE DATA; Schema: public; Owner: lovelace
+--
+
+COPY public.estudiante (nombres, apellidos, id) FROM stdin;
+Juan	Perez	8888
+Ana	Gutierrez	5555
+Ernesto	Huertas	2222
+\.
+
+
+--
+-- Name: curso2 curso2_pkey; Type: CONSTRAINT; Schema: public; Owner: lovelace
+--
+
+ALTER TABLE ONLY public.curso2
+    ADD CONSTRAINT curso2_pkey PRIMARY KEY (curso_cod);
+
+
+--
+-- Name: curso curso_pkey; Type: CONSTRAINT; Schema: public; Owner: lovelace
+--
+
+ALTER TABLE ONLY public.curso
+    ADD CONSTRAINT curso_pkey PRIMARY KEY (curso_cod);
+
+
+--
+-- Name: estcursos estcursos_pkey; Type: CONSTRAINT; Schema: public; Owner: lovelace
+--
+
+ALTER TABLE ONLY public.estcursos
+    ADD CONSTRAINT estcursos_pkey PRIMARY KEY (estid, curso_cod);
+
+
+--
+-- Name: estudiante estudiante_pkey; Type: CONSTRAINT; Schema: public; Owner: lovelace
+--
+
+ALTER TABLE ONLY public.estudiante
+    ADD CONSTRAINT estudiante_pkey PRIMARY KEY (id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
