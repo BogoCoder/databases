@@ -20,5 +20,14 @@ update unid_acad set presupuesto = presupuesto*1.03;
 update unid_acad set presupuesto = (select min(presupuesto) from unid_acad);
 
 --5
-create view resum 
+create view resum as select avg(presupuesto), min(presupuesto), max(presupuesto), stddev(presupuesto) from unid_acad;
 
+--6
+create view resumenGruposUnidad as select unid_acad.nombre_unid, nombre, grupo_cod, ano, semestre from unid_acad left outer join (curso natural join grupo) as A on unid_acad.nombre_unid = A.nombre_unid;
+
+--6a
+insert into grupo values('003', '1', '1', 2018);
+insert into grupo values('003', '2', '1', 2018);
+
+--6b
+select * from resumenGruposUnidad;
