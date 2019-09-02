@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.10 (Ubuntu 10.10-1.pgdg18.04+1)
--- Dumped by pg_dump version 10.10 (Ubuntu 10.10-1.pgdg18.04+1)
+-- Dumped from database version 10.10 (Ubuntu 10.10-0ubuntu0.18.04.1)
+-- Dumped by pg_dump version 10.10 (Ubuntu 10.10-0ubuntu0.18.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -30,6 +30,16 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: credito; Type: DOMAIN; Schema: public; Owner: postgres
+--
+
+CREATE DOMAIN public.credito AS integer
+	CONSTRAINT no_negative CHECK ((VALUE >= 0));
+
+
+ALTER DOMAIN public.credito OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -42,7 +52,7 @@ CREATE TABLE public.curso (
     curso_cod character varying(7) NOT NULL,
     nombre character varying(50),
     nombre_unid character varying(20),
-    creditos numeric(2,0)
+    creditos public.credito
 );
 
 
@@ -92,6 +102,34 @@ CREATE TABLE public.dicta (
 ALTER TABLE public.dicta OWNER TO postgres;
 
 --
+-- Name: examen; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.examen (
+    examen_cod character varying(7) NOT NULL,
+    curso_nombre character varying(20),
+    fecha date NOT NULL,
+    hora_inicio time without time zone DEFAULT '00:00:00'::time without time zone,
+    hora_fin time without time zone DEFAULT '00:00:00'::time without time zone
+);
+
+
+ALTER TABLE public.examen OWNER TO postgres;
+
+--
+-- Name: duracionexamenes; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.duracionexamenes AS
+ SELECT examen.curso_nombre,
+    date_part('hour'::text, examen.hora_inicio) AS hora_inicio,
+    (date_part('hour'::text, examen.hora_fin) - date_part('hour'::text, examen.hora_inicio)) AS duracion
+   FROM public.examen;
+
+
+ALTER TABLE public.duracionexamenes OWNER TO postgres;
+
+--
 -- Name: grupo; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -119,6 +157,20 @@ CREATE TABLE public.instructor (
 
 
 ALTER TABLE public.instructor OWNER TO postgres;
+
+--
+-- Name: instructorubic; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
+--
+
+CREATE MATERIALIZED VIEW public.instructorubic AS
+ SELECT instructor.nombres,
+    instructor.apellidos,
+    instructor.nombre_unid
+   FROM public.instructor
+  WITH NO DATA;
+
+
+ALTER TABLE public.instructorubic OWNER TO postgres;
 
 --
 -- Name: unid_acad; Type: TABLE; Schema: public; Owner: postgres
@@ -217,6 +269,17 @@ COPY public.dicta (inst_id, curso_cod, grupo_cod, semestre, ano) FROM stdin;
 
 
 --
+-- Data for Name: examen; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.examen (examen_cod, curso_nombre, fecha, hora_inicio, hora_fin) FROM stdin;
+000	programacion	2019-09-02	13:00:00	15:00:00
+001	arquitectura	2019-09-07	09:00:00	11:00:00
+002	laboratorio	2019-10-02	09:00:00	11:00:00
+\.
+
+
+--
 -- Data for Name: grupo; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -239,6 +302,8 @@ COPY public.instructor (inst_id, nombres, apellidos, nombre_unid, salario) FROM 
 2	Ana	Gutierrez	MACC	200.00
 3	Ernerto	Huertas	ECON	500.00
 4	Reinaldo	Rondon	MACC	300.00
+5	Camilo	Ramirez	ECON	200.00
+6	Edgar	Andrade	MACC	200.00
 \.
 
 
@@ -247,10 +312,13 @@ COPY public.instructor (inst_id, nombres, apellidos, nombre_unid, salario) FROM 
 --
 
 COPY public.unid_acad (nombre_unid, edificio, presupuesto) FROM stdin;
-ECON	Pedro	103.00
-BIOL	QM	103.00
-ROSEA	Claustro	103.00
-MACC	Cabal	103.00
+ECON	Pedro	285.40
+BIOL	QM	285.40
+ROSEA	Claustro	285.40
+MACC	Cabal	285.40
+JURIS	Admin	285.40
+ARTESLIBERALES	SF	50.00
+FILO	SF	50.00
 \.
 
 
@@ -287,6 +355,14 @@ ALTER TABLE ONLY public.dicta
 
 
 --
+-- Name: examen examen_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.examen
+    ADD CONSTRAINT examen_pkey PRIMARY KEY (examen_cod);
+
+
+--
 -- Name: grupo grupo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -300,6 +376,14 @@ ALTER TABLE ONLY public.grupo
 
 ALTER TABLE ONLY public.instructor
     ADD CONSTRAINT instructor_pkey PRIMARY KEY (inst_id);
+
+
+--
+-- Name: curso nombre_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.curso
+    ADD CONSTRAINT nombre_unique UNIQUE (nombre);
 
 
 --
@@ -351,6 +435,14 @@ ALTER TABLE ONLY public.dicta
 
 
 --
+-- Name: examen examen_curso_nombre_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.examen
+    ADD CONSTRAINT examen_curso_nombre_fkey FOREIGN KEY (curso_nombre) REFERENCES public.curso(nombre) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: grupo grupo_curso_cod_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -364,6 +456,42 @@ ALTER TABLE ONLY public.grupo
 
 ALTER TABLE ONLY public.instructor
     ADD CONSTRAINT instructor_nombre_unid_fkey FOREIGN KEY (nombre_unid) REFERENCES public.unid_acad(nombre_unid);
+
+
+--
+-- Name: TABLE unid_acad; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT DELETE ON TABLE public.unid_acad TO ramon;
+GRANT DELETE ON TABLE public.unid_acad TO planeacion;
+
+
+--
+-- Name: COLUMN unid_acad.nombre_unid; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT INSERT(nombre_unid) ON TABLE public.unid_acad TO ramon;
+
+
+--
+-- Name: COLUMN unid_acad.edificio; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT INSERT(edificio) ON TABLE public.unid_acad TO ramon;
+
+
+--
+-- Name: COLUMN unid_acad.presupuesto; Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT INSERT(presupuesto) ON TABLE public.unid_acad TO ramon;
+
+
+--
+-- Name: instructorubic; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
+--
+
+REFRESH MATERIALIZED VIEW public.instructorubic;
 
 
 --
