@@ -5,7 +5,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
-@WebServlet("/testServlet/estudiantes")
+@WebServlet("/testServlet/consultaPersona")
 public class ConsultaPersonaServlet extends HttpServlet{
 
 	public void doGet(HttpServletRequest request,
@@ -15,9 +15,9 @@ public class ConsultaPersonaServlet extends HttpServlet{
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 
-		out.println("<HEAD><TITLE> Query Result</TITLE></HEAD>");
+		out.println("<HEAD><TITLE>Query Result</TITLE></HEAD>");
 		out.println("<BODY>");
-		String search = request.getParameter("Search");
+		String persontype = request.getParameter("tipoPersona");
 		//String number = request.getParameter("nombre");
 		out.println("<table BORDER COLS=3>");
 		out.println(" <tr> <td>ID</td> <td>Nombre: </td>" +
