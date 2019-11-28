@@ -16,7 +16,16 @@ private:
 
 public:
   tupla_curso();
+  tupla_curso(std::string cod, std::string nom, std::string nom_u, int cre, int num_g);
   ~tupla_curso();
+  string obtener_curso_cod();
+  string obtener_nombre();
+  string obtener_nombre_unid();
+  int obtener_creditos();
+  int obtener_num_grupos();
+  void imprimirTupla();
+  void write(std::ostream& f);
+  void read(std::istream& f);
 };
 
 #include "tuplacurso.cpp"

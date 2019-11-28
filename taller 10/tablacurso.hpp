@@ -15,10 +15,14 @@ private:
   std::string PK = "curso_cod";
 public:
   tabla_curso();
+  tabla_curso(string nombre, list <tupla_curso> tuplas);
   ~tabla_curso();
-  bool agregar();
-  bool encontrar();
-  bool eliminar();
+  bool agregar(tupla_curso tupla);
+  bool encontrar(tupla_curso tupla);
+  bool eliminar(tupla_curso tupla);
+  void imprimirTabla();
+  void guardarTabla();
+  void leerTabla();
 };
 
 #include "tablacurso.cpp"
